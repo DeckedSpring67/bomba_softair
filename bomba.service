@@ -1,0 +1,11 @@
+[Unit]
+Description=Boooooomba
+
+[Service]
+Type=oneshot
+ExecStart=bomba
+RemainAfterExit=true
+User=root
+
+[Install]
+WantedBy=multi-user.target
