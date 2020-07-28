@@ -6,4 +6,5 @@ main:
 
 
 clean: rm -f *.o
-install: install -m644 bomba /usr/bin/bomba
+install: 
+	install -m 755 bomba /usr/bin/bomba

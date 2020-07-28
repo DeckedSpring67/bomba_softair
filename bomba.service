@@ -1,10 +1,12 @@
 [Unit]
 Description=Boooooomba
+StartLimitIntervalSec=500
+StartLimitBurst=5
 
 [Service]
-Type=oneshot
+Restart=always
+RestartSec=1s
 ExecStart=bomba
-RemainAfterExit=true
 User=root
 
 [Install]

@@ -122,6 +122,10 @@ static void handleInterrupt(){
 	}
 }
 
+void stub(){
+	//DOES NOTHING
+}
+
 void startTimer(){
 	unsigned long time_expl = millis() + (game_duration * 60 * 1000); //Time explosion
 	char output[100];
@@ -167,16 +171,45 @@ void startTimer(){
 			break;
 		}
 	}
+	wiringPiISR(2,INT_EDGE_BOTH,&stub);
+	hold_press = 0;
 	if(exploded){
 		writeOled("~POW!~\nLa bomba e' esplosa\n");
-
+		softToneWrite(BUZZER,3000);
+		delay(5000);
+		standbyBuzzer();
+		wiringPiISR(2,INT_EDGE_BOTH,&handleInterrupt);
+		while(button_state < 3){
+			if(hold_press != 0 ){
+				if(3 - (int)((millis() - hold_press)/1000) < 0)
+				 	writeOled("Rilasciare il pulsante");
+				else{
+					sprintf(output,"La bomba e' esplosa\nPremere il pulsante \nper almeno 3 secondi\nper resettare      %d",3 - (int)((millis() - hold_press)/1000));
+					writeOled(output);
+				}
+			}else{
+				writeOled("La bomba e' esplosa\nPremere il pulsante \nper almeno 3 secondi\nper resettare      -");
+			}
+		}
 	}else{
 		writeOled("La bomba e' stata\n disinnescata ");
+		playEvangelion();
+		standbyBuzzer();
+		wiringPiISR(2,INT_EDGE_BOTH,&handleInterrupt);
+		while(button_state < 3){
+			if(hold_press != 0 ){
+				if(3 - (int)((millis() - hold_press)/1000) < 0)
+				 	writeOled("Rilasciare il pulsante");
+				else{
+					sprintf(output,"La bomba e' stata disinnescata\nPremere il pulsante \nper almeno 3 secondi\nper resettare      %d",3 - (int)((millis() - hold_press)/1000));
+					writeOled(output);
+				}
+			}else{
+				writeOled("La bomba e' stata disinnescata\nPremere il pulsante \nper almeno 3 secondi\nper resettare      -");
+			}
+		}
+
 	}
-	delay(1000);
-	activeBuzzer();
-	softToneWrite(BUZZER,3000);
-	delay(5000);
 	standbyBuzzer();
 }
 
