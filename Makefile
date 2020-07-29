@@ -8,3 +8,4 @@ main:
 clean: rm -f *.o
 install: 
 	install -m 755 bomba /usr/bin/bomba
+	install -m 755 bomba.service /etc/systemd/system/bomba.service

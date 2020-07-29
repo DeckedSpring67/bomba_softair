@@ -129,13 +129,13 @@ void stub(){
 void startTimer(){
 	unsigned long time_expl = millis() + (game_duration * 60 * 1000); //Time explosion
 	char output[100];
-	unsigned long time_left;
+	long time_left;
 	unsigned long last_beep = millis();
 	hold_press = 0; //Reset button state
 	button_state = 0;
 	int exploded = 0;
 	while(button_state < 4 && !exploded){
-		time_left = time_expl - millis();
+		time_left = (long)(time_expl - millis());
 		int mins = (int)(time_left / 1000 / 60);
 		int secs = (int)(time_left / 1000 - (mins*60));
 		int mill = (int)(time_left - (mins*60*1000 + secs*1000));
@@ -147,7 +147,7 @@ void startTimer(){
 				writeOled(output);
 			}
 			if(last_beep >= 100){
-				beep(3000);
+				beep(3500);
 				last_beep = millis();
 			}
 		}else{
@@ -157,8 +157,14 @@ void startTimer(){
 					last_beep = millis();
 				}
 			}
+			else if(time_left < 60000 && time_left >= 10000){
+				if(millis() - last_beep >= 1000){
+					beep(2000);
+					last_beep = millis();
+				}
+			}
 			else{
-				if(millis() - last_beep >=1000){
+				if(millis() - last_beep >= 500){
 				beep(2000);
 				last_beep = millis();
 				}
@@ -173,6 +179,7 @@ void startTimer(){
 	}
 	wiringPiISR(2,INT_EDGE_BOTH,&stub);
 	hold_press = 0;
+	button_state = 0;
 	if(exploded){
 		writeOled("~POW!~\nLa bomba e' esplosa\n");
 		softToneWrite(BUZZER,3000);
@@ -184,11 +191,11 @@ void startTimer(){
 				if(3 - (int)((millis() - hold_press)/1000) < 0)
 				 	writeOled("Rilasciare il pulsante");
 				else{
-					sprintf(output,"La bomba e' esplosa\nPremere il pulsante \nper almeno 3 secondi\nper resettare      %d",3 - (int)((millis() - hold_press)/1000));
+					sprintf(output,"Bomba Esplosa\nPremere il pulsante \nper almeno 3 secondi\nper resettare      %d",3 - (int)((millis() - hold_press)/1000));
 					writeOled(output);
 				}
 			}else{
-				writeOled("La bomba e' esplosa\nPremere il pulsante \nper almeno 3 secondi\nper resettare      -");
+				writeOled("Bomba Esplosa\nPremere il pulsante \nper almeno 3 secondi\nper resettare      -");
 			}
 		}
 	}else{
@@ -201,11 +208,11 @@ void startTimer(){
 				if(3 - (int)((millis() - hold_press)/1000) < 0)
 				 	writeOled("Rilasciare il pulsante");
 				else{
-					sprintf(output,"La bomba e' stata disinnescata\nPremere il pulsante \nper almeno 3 secondi\nper resettare      %d",3 - (int)((millis() - hold_press)/1000));
+					sprintf(output,"Bomba Disinnescata\nPremere il pulsante \nper almeno 3 secondi\nper resettare      %d",3 - (int)((millis() - hold_press)/1000));
 					writeOled(output);
 				}
 			}else{
-				writeOled("La bomba e' stata disinnescata\nPremere il pulsante \nper almeno 3 secondi\nper resettare      -");
+				writeOled("Bomba Disinnescata\nPremere il pulsante \nper almeno 3 secondi\nper resettare      -");
 			}
 		}
 
